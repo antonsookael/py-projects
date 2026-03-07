@@ -3,7 +3,6 @@ import random
 
 clicks = 0.0
 cps = 0
-better_clicks1 = 2 # 2x upgrade
 
 clickers = 0
 clicker_price = 15
@@ -20,8 +19,10 @@ grandma_upgraded = False
 farms = 0
 farm_price = 1100
 farm_mult = 1
-farm_upgrade_price = 1100
+farm_upgrade_price = 5000
 farm_upgraded = False
+
+
 
 
 color = [
@@ -51,6 +52,10 @@ color = [
     "#f0bc74",  # honey
     "#e8a020",  # golden
 ]
+
+def debug_cookie():
+    global clicks
+    clicks += 1000000
 
 def cookie_clicks():
     global clicks
@@ -110,7 +115,7 @@ def buy_farm():
         farm_btn.config(text=f"Buy Farms - {round(farm_price)} 🍪({farms})")
 
     elif clicks < farm_price:
-        farm_btn.conifg(text=f"Need {round(farm_price)} cookies! 🍪")
+        farm_btn.config(text=f"Need {round(farm_price)} cookies! 🍪")
         root.after(1500, lambda: farm_btn.config(text=f"Buy Farm - {round(farm_price)} 🍪 ({farms})"))
 
     elif grandmas < 1:
@@ -126,15 +131,15 @@ def upgrade_grandma():
         betgrandma1_btn.config(text="✅ 2x👵")
         return
     
-    if grandmas >= 10 and clicks >= grandma_upgrade_price:
+    if grandmas >= 1 and clicks >= grandma_upgrade_price:
         clicks -= grandma_upgrade_price
         grandma_mult = 2
         grandma_upgraded = True
         cookie.config(text=f"🍪 {round(clicks)}")
         betgrandma1_btn.config(text="✅ 2x👵")
 
-    elif grandmas < 10:
-        betgrandma1_btn.config(text="Need 10 grandmas!")
+    elif grandmas < 1:
+        betgrandma1_btn.config(text="Need 1 grandmas!")
         root.after(1500, lambda: betgrandma1_btn.config(text="2x👵"))
 
     else:
@@ -147,30 +152,49 @@ def upgrade_clicker():
     if clicker_upgraded:
         betclickers1_btn.config(text="✅ 2x👆")
         return
-    if clickers >= 10 and clicks >= clicker_upgrade_price:
+    if clickers >= 1 and clicks >= clicker_upgrade_price:
         clicks -= clicker_upgrade_price
         clicker_mult = 2
         clicker_upgraded = True
         cookie.config(text=f"🍪 {round(clicks)}")
         betclickers1_btn.config(text="✅ 2x👆")
-    elif clickers < 10:
-        betclickers1_btn.config(text="Need 10 clickers!")
+    elif clickers < 1:
+        betclickers1_btn.config(text="Need 1 clickers!")
         root.after(1500, lambda: betclickers1_btn.config(text="2x👆"))
     else:
         betclickers1_btn.config(text=f"Need {clicker_upgrade_price} 🍪!")
         root.after(1500, lambda: betclickers1_btn.config(text="2x👆"))
 
 
+def upgrade_farm():
+
+    global clicks, farm_mult, farm_upgraded
+    if farm_upgraded:
+        betfarm1_btn.config(text="✅ 2x")
+        return
+    if farms >= 1 and clicks >= farm_upgrade_price:
+        clicks -= farm_upgrade_price
+        farm_mult = 2
+        farm_upgraded = True
+        cookie.config(text=f"🍪 {round(clicks)}")
+        betfarm1_btn.config(text="✅ 2x")
+    elif farms < 1:
+        betfarm1_btn.config(text="Need 1 Farm!")
+        root.after(1500, lambda: betfarm1_btn.config(text="2x"))
+    else:
+        betfarm1_btn.config(text=f"Need {farm_upgrade_price} 🍪!")
+        root.after(1500, lambda: betfarm1_btn.config(text="2x"))  
+
 
 # loop
 
 def auto_click():
-    global clicks, clicker_mult, grandma_mult, clickers, grandmas
+    global clicks, clicker_mult, grandma_mult, clickers, grandmas, farms, farm_mult
     clicks += clickers * 0.1 * clicker_mult
     clicks += grandmas * 1 * grandma_mult
-    clicks += farms * 8 #* farm_mult
+    clicks += farms * 8 * farm_mult
 
-    cps = clickers * 0.1 * clicker_mult + grandmas * 1 * grandma_mult + farms * 8 #* farm_mult  # calculate current cps
+    cps = clickers * 0.1 * clicker_mult + grandmas * 1 * grandma_mult + farms * 8 * farm_mult  # calculate current cps
 
     cookie.config(text=f"🍪 {round(clicks)}")
     cps_count.config(text=f"CPS: {round(cps, 1)}")  # update the label every second
@@ -191,10 +215,12 @@ root.after(1000, auto_click)
 root.columnconfigure(1, minsize=100)
 
 cookie = tk.Button(root, text=f"🍪 {round(clicks)}", width=15, height=3, command=cookie_clicks, font=("Arial", 16))
-cookie.grid(row=0, column=0, pady=20, padx=25)
+cookie.grid(row=0, column=0, pady=20, padx=20)
 
 cps_count = tk.Label(root, text=f"CPS: {cps}", bg="#cd853f", font=("Arial", 12))
 cps_count.grid(row=0, column=1)
+
+# buyable
 
 clicker_btn = tk.Button(root, text=f"Buy Clicker {round(clicker_price)} 🍪 ({clickers})", width=20, command=buy_clicker, bg="#8b4513", fg="white", relief="flat")
 clicker_btn.grid(row=1, column=0, pady=4)
@@ -205,11 +231,21 @@ grandma_btn.grid(row=2, column=0, pady=4)
 farm_btn = tk.Button(root, text=f"Buy Farm {round(farm_price)} 🍪 ({farms})", width=20, command=buy_farm, bg="#8b4513", fg="white", relief="flat")
 farm_btn.grid(row=3, column=0, pady=4)
 
-betclickers1_btn = tk.Button(root, text="2x👆", bg="#8b4513", fg="white", width=5, command=upgrade_clicker)
+# upgrades
+
+betclickers1_btn = tk.Button(root, text=f"2x👆 {clicker_upgrade_price} 🍪", bg="#8b4513", fg="white", width=13, command=upgrade_clicker)
 betclickers1_btn.grid(row=1, column=1)
 
-betgrandma1_btn = tk.Button(root, text="2x👵", bg="#8b4513", fg="white", width=5, command=upgrade_grandma)
+betgrandma1_btn = tk.Button(root, text=f"2x👵 {grandma_upgrade_price} 🍪", bg="#8b4513", fg="white", width=13, command=upgrade_grandma)
 betgrandma1_btn.grid(row=2, column=1)
 
+betfarm1_btn = tk.Button(root, text=f"2x {farm_upgrade_price} 🍪", bg="#8b4513", fg="white", width=13, command=upgrade_farm)
+betfarm1_btn.grid(row=3, column=1)
+
+
+# debug
+
+debugc = tk.Button(root, text="1m", width=5, command=debug_cookie)
+debugc.grid(row=0, column=2)
 
 root.mainloop()
