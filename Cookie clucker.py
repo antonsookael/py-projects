@@ -213,17 +213,17 @@ def upgrade_mine():
 
 def auto_click():
     global clicks, clicker_mult, grandma_mult, clickers, grandmas, farms, farm_mult, mines, mine_mult
-    clicks += clickers * 0.1 / 1000 * clicker_mult
-    clicks += grandmas * 1 / 1000 * grandma_mult
-    clicks += farms * 8 / 1000 * farm_mult
-    clicks += mines * 47 / 1000 * mine_mult
+    clicks += clickers * 0.1 / 100 * clicker_mult
+    clicks += grandmas * 1 / 100 * grandma_mult
+    clicks += farms * 8 / 100 * farm_mult
+    clicks += mines * 47 / 100 * mine_mult
 
     cps = (clickers * 0.1 * clicker_mult + grandmas * 1 * grandma_mult
            + farms * 8 * farm_mult + mines * 47 * mine_mult)
 
     cookie.config(text=f"🍪 {format_num(clicks)}")
     cps_count.config(text=f"CPS: {format_num(cps)}")
-    root.after(1, auto_click)
+    root.after(10, auto_click)
 
 
 # Window------------------------------------------------------------------------
@@ -231,7 +231,7 @@ def auto_click():
 root = tk.Tk()
 root.title("Cookie Clicker")
 root.configure(bg="#cd853f")
-root.after(1, auto_click)
+root.after(10, auto_click)
 root.columnconfigure(1, minsize=100)
 
 cookie = tk.Button(root, text=f"🍪 {format_num(clicks)}", width=15, height=3,
@@ -245,18 +245,22 @@ cps_count.grid(row=0, column=1)
 
 clicker_btn = tk.Button(root, text=f"Clicker {format_num(clicker_price)} 🍪 ({clickers})",
                          width=22, command=buy_clicker, bg="#8b4513", fg="white", relief="flat")
+
 clicker_btn.grid(row=1, column=0, pady=4)
 
-grandma_btn = tk.Button(root, text=f"Grandma {format_num(grandma_price)} 🍪 ({grandmas})",
-                         width=22, command=buy_grandmas, bg="#8b4513", fg="white", relief="flat")
+grandma_btn = tk.Button(root, text=f"Grandma {format_num(grandma_price)} 🍪 ({grandmas})", 
+                        width=22, command=buy_grandmas, bg="#8b4513", fg="white", relief="flat")
+
 grandma_btn.grid(row=2, column=0, pady=4)
 
 farm_btn = tk.Button(root, text=f"Farm {format_num(farm_price)} 🍪 ({farms})",
-                      width=22, command=buy_farm, bg="#8b4513", fg="white", relief="flat")
+                     width=22, command=buy_farm, bg="#8b4513", fg="white", relief="flat")
+
 farm_btn.grid(row=3, column=0, pady=4)
 
 mine_btn = tk.Button(root, text=f"Mine {format_num(mine_price)} 🍪 ({mines})",
                       width=22, command=buy_mine, bg="#8b4513", fg="white", relief="flat")
+
 mine_btn.grid(row=4, column=0, pady=4)
 
 # Upgrade buttons------------------------------------------------------------------------
