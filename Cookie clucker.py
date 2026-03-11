@@ -22,7 +22,13 @@ farm_mult = 1
 farm_upgrade_price = 5000
 farm_upgraded = False
 
+mines = 0
+mine_price = 12000
+mine_mult = 1
+mine_upgrade_price = 20000
+mine_upgraded = False
 
+#--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 color = [
@@ -53,6 +59,7 @@ color = [
     "#e8a020",  # golden
 ]
 
+
 def debug_cookie():
     global clicks
     clicks += 1000000
@@ -63,7 +70,7 @@ def cookie_clicks():
     cookie.config(text=f"🍪 {round(clicks)}", bg=random.choice(color))
     
 
-# Buyables
+# Buyables----------------------------------------------------------------------------------------------------
 
 def buy_clicker():
     global clicks, clickers, clicker_price
@@ -123,7 +130,27 @@ def buy_farm():
         root.after(1500, lambda: farm_btn.config(text=f" Farm - {round(farm_price)} 🍪 ({farms})"))
 
 
-# Upgardes
+def buy_mine():
+    
+    global clicks, mine_price, mines
+
+    if clicks >= mine_price and farms >= 1:
+        clicks -= mine_price
+        mines += 1
+        mine_price *= 1.15
+
+        cookie.config(text=f"🍪 {round(clicks)}")
+        mine_btn.config(text=f" Mines - {round(mine_price)} 🍪({mines})")
+
+    elif clicks < mine_price:
+        mine_btn.config(text=f"Need {round(mine_price)} cookies! 🍪")
+        root.after(1500, lambda: mine_btn.config(text=f" Mines - {round(mine_price)} 🍪 ({mines})"))
+    elif farms < 1:
+        mine_btn.config(text="Need atleast 1 Farm!")
+        root.after(1500, lambda: mine_btn.config(text=f" Mines - {round(mine_price)} 🍪 ({mines})"))
+
+
+# Upgardes----------------------------------------------------------------------------------------------------
 
 def upgrade_grandma():
     global clicks, grandma_mult, grandma_upgraded
@@ -186,15 +213,36 @@ def upgrade_farm():
         root.after(1500, lambda: betfarm1_btn.config(text="2x"))  
 
 
-# loop
+def upgrade_mine():
+
+    global clicks, mine_mult, mine_upgraded
+    if mine_upgraded:
+        betmine1_btn.config(text="✅ 2x")
+        return
+    if mines >= 1 and clicks >= mine_upgrade_price:
+        clicks -= mine_upgrade_price
+        mine_mult = 2
+        mine_upgraded = True
+        cookie.config(text=f"🍪 {round(clicks)}")
+        betmine1_btn.config(text="✅ 2x")
+    elif mines < 1:
+        betmine1_btn.config(text="Need 1 Mine!")
+        root.after(1500, lambda: betmine1_btn.config(text="2x"))
+    else:
+        betmine1_btn.config(text=f"Need {mine_upgrade_price} 🍪!")
+        root.after(1500, lambda: betmine1_btn.config(text="2x"))  
+
+
+# loop----------------------------------------------------------------------------------------------------
 
 def auto_click():
     global clicks, clicker_mult, grandma_mult, clickers, grandmas, farms, farm_mult
     clicks += clickers * 0.1 / 1000 * clicker_mult
     clicks += grandmas * 1 / 1000 * grandma_mult
     clicks += farms * 8 / 1000 * farm_mult
+    clicks += mines * 47 / 1000 * mine_mult
 
-    cps = clickers * 0.1 * clicker_mult + grandmas * 1 * grandma_mult + farms * 8 * farm_mult
+    cps = clickers * 0.1 * clicker_mult + grandmas * 1 * grandma_mult + farms * 8 * farm_mult + mines * 47 * mine_mult
 
     cookie.config(text=f"🍪 {round(clicks)}")
     cps_count.config(text=f"CPS: {round(cps, 1)}")
@@ -202,7 +250,7 @@ def auto_click():
 
     
 
-# Window tkinter stuff
+# Window tkinter stuff----------------------------------------------------------------------------------------------------
 
 root = tk.Tk()
 
@@ -220,7 +268,8 @@ cookie.grid(row=0, column=0, pady=20, padx=20)
 cps_count = tk.Label(root, text=f"CPS: {cps}", bg="#cd853f", font=("Arial", 12))
 cps_count.grid(row=0, column=1)
 
-# buyable
+# buyable----------------------------------------------------------------------------------------------------
+
 
 clicker_btn = tk.Button(root, text=f"Clicker {round(clicker_price)} 🍪 ({clickers})", width=20, command=buy_clicker, bg="#8b4513", fg="white", relief="flat")
 clicker_btn.grid(row=1, column=0, pady=4)
@@ -231,7 +280,12 @@ grandma_btn.grid(row=2, column=0, pady=4)
 farm_btn = tk.Button(root, text=f"Farm {round(farm_price)} 🍪 ({farms})", width=20, command=buy_farm, bg="#8b4513", fg="white", relief="flat")
 farm_btn.grid(row=3, column=0, pady=4)
 
-# upgrades
+mine_btn = tk.Button(root, text=f"Mine {round(mine_price)} 🍪 ({mines})", width=20, command=buy_mine, bg="#8b4513", fg="white", relief="flat")
+mine_btn.grid(row=4, column=0, pady=4)
+
+
+# upgrades----------------------------------------------------------------------------------------------------
+
 
 betclickers1_btn = tk.Button(root, text=f"2x👆 {clicker_upgrade_price} 🍪", bg="#8b4513", fg="white", width=13, command=upgrade_clicker)
 betclickers1_btn.grid(row=1, column=1)
@@ -242,10 +296,16 @@ betgrandma1_btn.grid(row=2, column=1)
 betfarm1_btn = tk.Button(root, text=f"2x {farm_upgrade_price} 🍪", bg="#8b4513", fg="white", width=13, command=upgrade_farm)
 betfarm1_btn.grid(row=3, column=1)
 
+betmine1_btn = tk.Button(root, text=f"2x {mine_upgrade_price} 🍪", bg="#8b4513", fg="white", width=13, command=upgrade_mine)
+betmine1_btn.grid(row=4, column=1)
 
-# debug
+
+# debug----------------------------------------------------------------------------------------------------
 
 debugc = tk.Button(root, text="1m", width=5, command=debug_cookie)
 debugc.grid(row=0, column=2)
 
+
+
+# ----------------------------------------------------------------------------------------------------------------
 root.mainloop()
