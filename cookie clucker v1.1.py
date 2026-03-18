@@ -41,6 +41,12 @@ stats_open_b = False
 
 shop_open_b = False
 
+ads_open_b = False
+
+# bg="#8b4513", fg="white"
+#
+
+
 #------------------------------------------------------------------------
 
 
@@ -87,24 +93,57 @@ def cookie_clicks():
 
 #side btn------------------------------------------------------------------------------------------
 
-def open_stats():
-    global ov_cookies, ov_spent, time_spent_lb, stats_open_b
+def open_advert():
+    global advert1, advert_btn, ads_open_b, stats_open_b, shop_open_b, advert2
+
+
+    advert_btn.config(text="Close", command=close_advert)
+
+    advert1 = tk.Label(root, text="tung tung tung sahurr", bg="#8b4513", fg="white")
+    advert1.grid(row=1, column=0)
+
+    advert2 = tk.Label(root, text="tung tung tung sahurr", bg="#8b4513", fg="white")
+    advert2.grid(row=2, column=0)
+
+    ads_open_b = True
 
     if shop_open_b:
         close_shops()
+    if stats_open_b:
+        close_stats()
+    
 
-    ov_cookies = tk.Label(root, text=f"Overall cookies made: {format_num(overall_cookies)}", bg="#cd853f")
+def close_advert():
+    global advert_btn, advert1, ads_open_b, advert2
+
+    advert_btn.config(text="Ads", command=open_advert)
+
+    advert1.grid_remove()
+    advert2.grid_remove()
+
+
+    
+
+def open_stats():
+    global ov_cookies, ov_spent, time_spent_lb, stats_open_b, shop_open_b, ads_open_b
+
+    if shop_open_b:
+        close_shops()
+    if ads_open_b:
+        close_advert()
+
+    ov_cookies = tk.Label(root, text=f"Overall cookies made: {format_num(overall_cookies)}", bg="#8b4513", fg="white")
     ov_cookies.grid(row=1, column=0)
 
-    ov_spent = tk.Label(root, text=f"Overall cookies spent: {format_num(overall_spent)}", bg="#cd853f")
+    ov_spent = tk.Label(root, text=f"Overall cookies spent: {format_num(overall_spent)}", bg="#8b4513", fg="white")
     ov_spent.grid(row=2, column=0)
 
-    time_spent_lb = tk.Label(root, text=f"Time spent: {time_spent}", bg="#cd853f")
+    time_spent_lb = tk.Label(root, text=f"Time spent: {time_spent}", bg="#8b4513", fg="white")
     time_spent_lb.grid(row=3, column=0)
 
     stats_btn.config(text="Close", command=close_stats)
     stats_open_b = True
-
+    
 
 def close_stats():
     global ov_cookies, ov_spent, time_spent_lb, stats_open_b
@@ -120,7 +159,7 @@ def close_stats():
 
 def open_shops():
     global clicker_btn, grandma_btn, farm_btn, mine_btn
-    global betclickers1_btn, betgrandma1_btn, betfarm1_btn, betmine1_btn, shop_open_b
+    global betclickers1_btn, betgrandma1_btn, betfarm1_btn, betmine1_btn, shop_open_b, stats_open_b, ads_open_b
 
     shops_btn.config(text="Close", command=close_shops)
 
@@ -153,8 +192,11 @@ def open_shops():
     shop_open_b = True
     if stats_open_b:
         close_stats()
+    if ads_open_b:
+        close_advert()
 
     shops_btn.config(text="Close", command=close_shops)
+
 
 def close_shops():
     global clicker_btn, grandma_btn, farm_btn, mine_btn
@@ -344,7 +386,7 @@ def auto_click():
         time_spent_lb.config(text=f"Time spent: {time_spent // 1000}s")
 
     cookie.config(text=f"🍪 {format_num(clicks)}")
-    cps_count.config(text=f"CPS: {format_num(cps)}")
+    cps_count.config(text=f"CPS: {cps}")
     root.after(10, auto_click)
 
 
@@ -371,6 +413,9 @@ shops_btn.grid(row=1, column=2, pady=4)
 
 stats_btn = tk.Button(root, text="Stats", bg="black", fg="white", width=5, command=open_stats)
 stats_btn.grid(row=2, column=2, pady=4)
+
+advert_btn = tk.Button(root, text="Ads", bg="black", fg="white", width=5, command=open_advert)
+advert_btn.grid(row=3, column=2, pady=4)
 
 # Debug------------------------------------------------------------------------
 
